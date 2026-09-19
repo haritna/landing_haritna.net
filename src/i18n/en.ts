@@ -616,7 +616,7 @@ export default {
       s2: {
         tag: 'Selling',
         title: 'Scan, Search & Checkout',
-        desc: 'Search products by name or scan barcodes with a connected scanner. Add items to cart, look up customers, choose payment method (Cash, Card, Wallet), and process the sale.',
+        desc: 'Search products by name or scan barcodes with a connected scanner. Add items to cart, look up customers, choose payment method (Cash, Card, Balance), and process the sale.',
         b1: 'Barcode/SKU scanner integration with heartbeat monitoring',
         b2: 'Customer lookup with avatar display',
         b3: 'Multiple payment methods with change calculation',
