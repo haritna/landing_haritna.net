@@ -25,7 +25,17 @@ const year = new Date().getFullYear()
         <RouterLink to="/data-deletion" class="text-muted-foreground transition-colors hover:text-primary">
           {{ t('legal.nav.data_deletion') }}
         </RouterLink>
+        <span class="text-muted-foreground/40">·</span>
+        <RouterLink to="/company" class="text-muted-foreground transition-colors hover:text-primary">
+          {{ t('company.nav') }}
+        </RouterLink>
       </nav>
+      <p class="mb-1 text-muted-foreground/70 text-xs">
+        {{ t('company.values.legal_name_ar') }}
+      </p>
+      <p class="mb-3 text-muted-foreground/70 text-xs" dir="ltr">
+        Haritna Smart Systems Technology and AI Solutions · {{ t('company.footer_line', { cr: '301205', tax: '769-522-572' }) }}
+      </p>
       <p class="text-muted-foreground/60 text-xs">
         {{ t('footer.rights', { year }) }}
       </p>

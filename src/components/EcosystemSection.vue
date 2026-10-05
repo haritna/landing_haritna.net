@@ -15,6 +15,8 @@ const portals = [
   { key: 'shop', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z', color: 'text-accent' },
 ]
 
+const sellTypes = [ 'standard', 'custom_order', 'service', 'auction', 'used', 'space' ]
+
 /* D comes from useScreenshotPath() above */
 </script>
 
@@ -48,7 +50,16 @@ const portals = [
                   {{ t('ecosystem.dukkan.badge') }}
                 </span>
               </div>
-              <p class="text-muted-foreground">{{ t('ecosystem.dukkan.description') }}</p>
+              <p class="text-muted-foreground leading-relaxed">{{ t('ecosystem.dukkan.description') }}</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <span
+                  v-for="type in sellTypes"
+                  :key="type"
+                  class="px-2.5 py-1 text-xs font-semibold rounded-full bg-muted border border-border"
+                >
+                  {{ t(`dukkan_about.sell.${type}.title`) }}
+                </span>
+              </div>
             </div>
           </div>
 

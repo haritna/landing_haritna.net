@@ -3,13 +3,16 @@ import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import operator from '@/legal/operator.md?raw'
+import { renderVolume } from '@/legal/render'
 
 defineProps<{
   title: string
-  subtitle: string
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+const operatorHtml = renderVolume( operator )
 </script>
 
 <template>
@@ -19,7 +22,7 @@ const { t } = useI18n()
       <div class="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
         <RouterLink to="/" class="flex items-center gap-2">
           <img src="/logo.png" alt="Haritna" class="h-8 w-auto" />
-          <span class="text-sm font-bold text-primary">{{ t('legal.company_name') }}</span>
+          <span class="text-sm font-bold text-primary-light">{{ t('legal.company_name') }}</span>
         </RouterLink>
         <div class="flex items-center gap-2">
           <LanguageSwitcher />
@@ -32,7 +35,7 @@ const { t } = useI18n()
       <!-- Title -->
       <div class="mb-10 text-center">
         <h1 class="mb-2 text-3xl font-bold tracking-tight">{{ title }}</h1>
-        <p class="text-muted-foreground">{{ subtitle }}</p>
+        <p class="mt-3 text-xs text-muted-foreground/70">{{ t('legal.source_note') }}</p>
         <p class="mt-3 text-xs text-muted-foreground/70">
           {{ t('legal.last_updated') }}: {{ t('legal.effective_date') }}
         </p>
@@ -63,22 +66,21 @@ const { t } = useI18n()
         </RouterLink>
       </nav>
 
-      <!-- Pilot phase banner -->
-      <div class="mb-8 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-100">
-        <strong>{{ t('legal.pilot_notice').split(':')[0] }}:</strong>
-        {{ t('legal.pilot_notice').split(':').slice(1).join(':').trim() }}
-      </div>
+      <p v-if="locale !== 'ar'" class="mb-8 rounded-xl border border-border bg-muted/40 p-4 text-center text-sm text-muted-foreground">
+        {{ t('legal.arabic_only_note') }}
+      </p>
 
       <!-- Body slot -->
-      <article class="legal-content max-w-none">
+      <article class="legal-content max-w-none" dir="rtl" lang="ar">
         <slot />
+        <section class="legal-operator" v-html="operatorHtml" />
       </article>
 
       <!-- Back -->
       <div class="mt-12 text-center">
         <RouterLink
           to="/"
-          class="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-muted"
+          class="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-primary-light transition-colors hover:bg-muted"
         >
           ← {{ t('legal.back_home') }}
         </RouterLink>
@@ -129,5 +131,49 @@ const { t } = useI18n()
 .legal-content :deep(li strong) {
   color: var(--color-foreground);
   font-weight: 600;
+}
+.legal-content :deep(h2.legal-part) {
+  margin-top: 3rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+.legal-content :deep(strong) {
+  color: var(--color-foreground);
+  font-weight: 700;
+}
+.legal-content :deep(hr) {
+  margin: 2rem 0;
+  border-color: var(--color-border);
+}
+.legal-content :deep(.legal-table) {
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+.legal-content :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.legal-content :deep(th),
+.legal-content :deep(td) {
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: start;
+  vertical-align: top;
+  line-height: 1.6;
+}
+.legal-content :deep(th) {
+  background: color-mix(in oklch, var(--color-muted) 60%, transparent);
+  font-weight: 700;
+}
+.legal-content :deep(tr:last-child td) {
+  border-bottom: 0;
+}
+.legal-operator {
+  margin-top: 3rem;
 }
 </style>

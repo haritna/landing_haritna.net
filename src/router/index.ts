@@ -29,6 +29,11 @@ const router = createRouter( {
       name: 'data-deletion',
       component: () => import( '@/pages/DataDeletionPage.vue' ),
     },
+    {
+      path: '/company',
+      name: 'company',
+      component: () => import( '@/pages/CompanyPage.vue' ),
+    },
     // Dukkan routes
     {
       path: '/dukkan',
