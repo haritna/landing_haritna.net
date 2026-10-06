@@ -3,6 +3,7 @@ import TheNavbar from '@/components/TheNavbar.vue'
 import HeroSection from '@/components/HeroSection.vue'
 import PhilosophySection from '@/components/PhilosophySection.vue'
 import EcosystemSection from '@/components/EcosystemSection.vue'
+import CommissionSection from '@/components/CommissionSection.vue'
 import TechExcellence from '@/components/TechExcellence.vue'
 import EnterpriseReady from '@/components/EnterpriseReady.vue'
 import TheFooter from '@/components/TheFooter.vue'
@@ -15,6 +16,7 @@ import TheFooter from '@/components/TheFooter.vue'
       <HeroSection />
       <PhilosophySection />
       <EcosystemSection />
+      <CommissionSection cta />
       <TechExcellence />
       <EnterpriseReady />
     </main>

@@ -10,6 +10,7 @@ import ScrollReveal from '@/components/ScrollReveal.vue'
 import PhoneMockup from '@/dukkan/components/PhoneMockup.vue'
 import BrowserMockup from '@/dukkan/components/BrowserMockup.vue'
 import DukkanExplainer from '@/dukkan/components/DukkanExplainer.vue'
+import CommissionSection from '@/components/CommissionSection.vue'
 
 const { t, te, locale } = useI18n()
 const { desktopBase: D, mobileBase: M } = useScreenshotPath()
@@ -240,6 +241,8 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
         </div>
       </div>
     </section>
+
+    <CommissionSection />
 
     <DukkanExplainer @start="goTo( 'register' )" />
 

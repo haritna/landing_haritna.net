@@ -358,6 +358,27 @@ export default {
     vehicles_desc:
       'Drivers can register their vehicles — type, registration number, capacity, color. One vehicle is marked as primary for order assignments.',
   },
+  commission: {
+    label: 'Launch rate',
+    dots: 'EGP 2 commission out of every EGP 100',
+    title: 'Just 2% on what you sell',
+    desc: 'Open your shop and list your products for free, then pay just 2% of the order value once it is delivered and kept. Out of every EGP 100 you sell, our commission is EGP 2.',
+    points: {
+      free: 'Free to open your shop and list products',
+      delivered: 'Commission on orders delivered and kept',
+      earn: 'You pay when you earn',
+    },
+    calc: {
+      title: 'Do the math',
+      sales: 'Your sales',
+      ours: 'Dukkan commission',
+      market: 'Marketplace at {n}%',
+      note: 'Fashion commission on large online marketplaces in Egypt reaches {n}%.',
+      currency: 'EGP',
+      saved: 'You keep EGP {amount} more',
+    },
+    cta: 'See Dukkan inside',
+  },
   wt: {
     hero: {
       badge: 'A {n}-step tour',
