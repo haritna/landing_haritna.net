@@ -11,28 +11,124 @@ import PhoneMockup from '@/dukkan/components/PhoneMockup.vue'
 import BrowserMockup from '@/dukkan/components/BrowserMockup.vue'
 import DukkanExplainer from '@/dukkan/components/DukkanExplainer.vue'
 
-const { t } = useI18n()
+const { t, te, locale } = useI18n()
 const { desktopBase: D, mobileBase: M } = useScreenshotPath()
 const isScrolled = ref( false )
 const activeFlow = ref( '' )
 
-const flows = [
-  { id: 'f1', key: 'wt.nav.register' },
-  { id: 'f2', key: 'wt.nav.shop' },
-  { id: 'f3', key: 'wt.nav.types' },
-  { id: 'f4', key: 'wt.nav.cart' },
-  { id: 'f5', key: 'wt.nav.business' },
-  { id: 'f6', key: 'wt.nav.catalog' },
-  { id: 'f7', key: 'wt.nav.orders' },
-  { id: 'f8', key: 'wt.nav.social' },
-  { id: 'f9', key: 'wt.nav.builder' },
-  { id: 'f10', key: 'wt.nav.delivery' },
-  { id: 'f11', key: 'wt.nav.chat' },
-  { id: 'f12', key: 'wt.nav.pos' },
-  { id: 'f13', key: 'wt.nav.analytics' },
-  { id: 'f14', key: 'wt.nav.tickets' },
-  { id: 'f15', key: 'wt.nav.coupons' },
+type Shot = { d?: string, m?: string[], url?: string, og?: string[] }
+type Block =
+  | { kind: 'split', key?: string, shot?: Shot }
+  | { kind: 'cards', keys: string[], cols: 2 | 3, shots?: Record<string, string> }
+  | { kind: 'tiles', keys: string[], steps?: boolean }
+  | { kind: 'shot', shot: Shot }
+  | { kind: 'gallery', key: string, og: Record<string, string> }
+type Flow = { id: string, scenario?: string, blocks: Block[] }
+type Chapter = { id: string, flows: Flow[] }
+
+const chapters: Chapter[] = [
+  { id: 'start', flows: [
+    { id: 'register', scenario: '👩', blocks: [
+      { kind: 'split', key: 's1', shot: { m: [ 'register' ] } },
+      { kind: 'split', key: 's2', shot: { m: [ 'login' ] } },
+    ] },
+    { id: 'company', scenario: '👩', blocks: [
+      { kind: 'split', key: 's1', shot: { m: [ 'dashboard', 'company-create' ] } },
+      { kind: 'split', key: 's2', shot: { d: 'company-members', url: 'Team' } },
+      { kind: 'split', key: 's3', shot: { d: 'company-kyb', url: 'Verification' } },
+    ] },
+    { id: 'catalog', blocks: [
+      { kind: 'split', key: 'cats', shot: { d: 'company-categories', m: [ 'category-tree' ] } },
+      { kind: 'split', key: 'prods', shot: { d: 'company-products', url: 'Products' } },
+      { kind: 'cards', keys: [ 'stock', 'media' ], cols: 2 },
+    ] },
+    { id: 'types', blocks: [
+      { kind: 'cards', keys: [ 'standard', 'custom_order', 'service', 'auction', 'used', 'space' ], cols: 3 },
+      { kind: 'shot', shot: { m: [ 'product-create' ] } },
+    ] },
+  ] },
+  { id: 'show', flows: [
+    { id: 'builder', blocks: [
+      { kind: 'split', key: 'sections', shot: { d: 'page-builder', url: 'Page Builder' } },
+      { kind: 'split', key: 'result', shot: { d: 'public-page', url: 'dukkan.haritna.net/elegance-fashion' } },
+    ] },
+    { id: 'share', scenario: '👩', blocks: [
+      { kind: 'split', key: 'card', shot: { og: [ 'evening-gown', 'leather-tote-bag' ] } },
+      { kind: 'gallery', key: 'kinds', og: { company: 'elegance-fashion', branch: 'cairo-branch', category: 'dresses', member: 'sara' } },
+      { kind: 'tiles', keys: [ 's1', 's2', 's3' ] },
+      { kind: 'split', key: 'stats' },
+      { kind: 'shot', shot: { d: 'share-analytics', url: 'Share Analytics' } },
+    ] },
+    { id: 'market', scenario: '👨', blocks: [
+      { kind: 'split', key: 's1', shot: { d: 'storefront', url: 'dukkan.haritna.net' } },
+      { kind: 'split', key: 's2', shot: { d: 'products', m: [ 'products' ] } },
+      { kind: 'split', key: 's3', shot: { m: [ 'storefront' ] } },
+    ] },
+    { id: 'social', blocks: [
+      { kind: 'cards', keys: [ 'follow', 'wishlist', 'reviews' ], cols: 3, shots: { follow: 'following', wishlist: 'wishlist', reviews: 'profile' } },
+    ] },
+  ] },
+  { id: 'sell', flows: [
+    { id: 'cart', blocks: [
+      { kind: 'tiles', keys: [ 's1', 's2', 's3', 's4' ], steps: true },
+      { kind: 'shot', shot: { m: [ 'cart' ] } },
+    ] },
+    { id: 'orders', blocks: [
+      { kind: 'split', key: 'board', shot: { d: 'company-orders', url: 'Orders' } },
+      { kind: 'split', key: 'detail', shot: { m: [ 'order-detail' ] } },
+      { kind: 'cards', keys: [ 'aftersale', 'document' ], cols: 2 },
+    ] },
+    { id: 'shipping', blocks: [
+      { kind: 'tiles', keys: [ 's1', 's2', 's3' ] },
+      { kind: 'shot', shot: { d: 'shipping-settings', url: 'Shipping' } },
+    ] },
+    { id: 'spaces', scenario: '📸', blocks: [
+      { kind: 'split', key: 's1', shot: { d: 'venue-spaces', url: 'Spaces' } },
+      { kind: 'split', key: 's2', shot: { m: [ 'public-space' ] } },
+    ] },
+    { id: 'pos', scenario: '🛒', blocks: [
+      { kind: 'cards', keys: [ 's1', 's2', 's3' ], cols: 3 },
+      { kind: 'shot', shot: { d: 'pos-terminal', url: 'POS' } },
+    ] },
+  ] },
+  { id: 'grow', flows: [
+    { id: 'analytics', blocks: [
+      { kind: 'shot', shot: { d: 'analytics', url: 'Analytics' } },
+      { kind: 'cards', keys: [ 's1', 's2', 's3' ], cols: 3 },
+    ] },
+    { id: 'coupons', scenario: '🎫', blocks: [
+      { kind: 'cards', keys: [ 's1', 's2', 's3' ], cols: 3 },
+      { kind: 'shot', shot: { d: 'coupons', url: 'Coupons' } },
+    ] },
+    { id: 'automation', scenario: '👩', blocks: [
+      { kind: 'shot', shot: { d: 'automations', url: 'Automation' } },
+      { kind: 'cards', keys: [ 's1', 's2', 's3' ], cols: 3 },
+    ] },
+    { id: 'tickets', blocks: [
+      { kind: 'cards', keys: [ 's1', 's2', 's3' ], cols: 3 },
+      { kind: 'shot', shot: { d: 'tickets', url: 'Tickets' } },
+    ] },
+    { id: 'notifications', blocks: [
+      { kind: 'split', shot: { d: 'notifications', m: [ 'notifications' ] } },
+    ] },
+    { id: 'credits', blocks: [
+      { kind: 'cards', keys: [ 's1', 's2' ], cols: 2 },
+      { kind: 'shot', shot: { d: 'credits', url: 'Credits' } },
+    ] },
+  ] },
 ]
+
+const numbered = chapters.flatMap( ( c ) => c.flows.map( ( f ) => f.id ) )
+const why = [ 'one_app', 'details', 'help', 'share' ]
+
+function splitCols( shot: Shot | undefined, bi: number ) {
+  if ( !shot ) return ''
+  if ( shot.d && !shot.m ) return bi % 2 ? 'md:grid-cols-[3fr_2fr]' : 'md:grid-cols-[2fr_3fr]'
+  return 'md:grid-cols-2'
+}
+const flowNumber = ( id: string ) => numbered.indexOf( id ) + 1
+const k = ( ...parts: ( string | undefined )[] ) => [ 'wt.flow', ...parts ].filter( Boolean ).join( '.' )
+const bullets = ( base: string ) => [ 'b1', 'b2', 'b3', 'b4' ].filter( ( b ) => te( `${base}.${b}` ) ).map( ( b ) => `${base}.${b}` )
 
 function handleScroll() {
   isScrolled.value = window.scrollY > 50
@@ -55,7 +151,6 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
 <template>
   <div class="min-h-screen bg-background text-foreground">
 
-    <!-- NAV -->
     <nav class="fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b"
       :class="isScrolled ? 'bg-background/90 backdrop-blur-xl border-border shadow-lg' : 'bg-transparent border-transparent'">
       <div class="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-5">
@@ -68,16 +163,18 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
           <ThemeToggle />
         </div>
       </div>
-      <div class="hidden md:flex mx-auto max-w-[1200px] flex-wrap justify-center gap-1 px-5 pb-2.5">
-        <button v-for="f in flows" :key="f.id" @click="goTo( f.id )"
-          class="whitespace-nowrap px-2.5 py-1 rounded-md text-xs font-semibold transition-colors"
-          :class="activeFlow === f.id ? 'bg-accent/15 text-accent' : 'text-muted-foreground hover:text-foreground hover:bg-muted'">
-          {{ t( f.key ) }}
-        </button>
+      <div class="hidden md:flex mx-auto max-w-[1200px] flex-wrap justify-center items-center gap-x-4 gap-y-1 px-5 pb-2.5">
+        <div v-for="c in chapters" :key="c.id" class="flex flex-wrap items-center gap-1">
+          <span class="px-1 text-xs font-bold text-foreground">{{ t( `wt.chapters.${c.id}.title` ) }}</span>
+          <button v-for="f in c.flows" :key="f.id" @click="goTo( f.id )"
+            class="whitespace-nowrap px-2.5 py-1 rounded-md text-xs font-semibold transition-colors"
+            :class="activeFlow === f.id ? 'bg-accent/15 text-accent' : 'text-muted-foreground hover:text-foreground hover:bg-muted'">
+            {{ t( k( f.id, 'nav' ) ) }}
+          </button>
+        </div>
       </div>
     </nav>
 
-    <!-- HERO -->
     <section class="relative pt-28 md:pt-40 pb-16 overflow-hidden text-center">
       <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-40 blur-[60px] pointer-events-none"
         style="background: radial-gradient(ellipse at 40% 50%, rgba(232,97,58,.15), transparent 65%), radial-gradient(ellipse at 60% 40%, rgba(42,63,106,.2), transparent 60%);"></div>
@@ -85,7 +182,7 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
         <ScrollReveal>
           <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-border text-xs font-semibold text-muted-foreground mb-6">
             <span class="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_6px] shadow-accent"></span>
-            {{ t( 'wt.hero.badge' ) }}
+            {{ t( 'wt.hero.badge', { n: numbered.length } ) }}
           </div>
         </ScrollReveal>
         <ScrollReveal :delay="100">
@@ -107,11 +204,10 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
       </div>
     </section>
 
-    <!-- STATS -->
     <div class="mx-auto max-w-[1100px] px-5">
       <ScrollReveal>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-10 border-y border-border">
-          <div v-for="s in [{v:'15',l:'wt.stats.flows'},{v:'4',l:'wt.stats.types'},{v:'EN/AR',l:'wt.stats.bilingual'},{v:'4',l:'wt.stats.platforms'}]" :key="s.l" class="text-center">
+          <div v-for="s in [{v:String( numbered.length ),l:'wt.stats.flows'},{v:'6',l:'wt.stats.types'},{v:'EN/AR',l:'wt.stats.bilingual'},{v:'4',l:'wt.stats.platforms'}]" :key="s.l" class="text-center">
             <div class="text-2xl sm:text-3xl font-black bg-gradient-to-br from-foreground to-accent bg-clip-text text-transparent">{{ s.v }}</div>
             <div class="text-xs text-muted-foreground mt-1">{{ t( s.l ) }}</div>
           </div>
@@ -119,9 +215,34 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
       </ScrollReveal>
     </div>
 
-    <DukkanExplainer @start="goTo( 'f1' )" />
+    <section class="py-16">
+      <div class="mx-auto max-w-[1100px] px-5">
+        <ScrollReveal>
+          <div class="text-center mb-10">
+            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.why.label' ) }}</span>
+            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mb-3">{{ t( 'wt.why.title' ) }}</h2>
+            <p class="text-muted-foreground max-w-lg mx-auto">{{ t( 'wt.why.desc' ) }}</p>
+          </div>
+        </ScrollReveal>
+        <ScrollReveal>
+          <div class="rounded-3xl border border-accent/40 bg-accent/5 p-6 sm:p-10 mb-10 grid md:grid-cols-[1fr_2fr] gap-4 md:gap-10 items-center">
+            <h3 class="text-3xl sm:text-4xl font-black tracking-tight text-accent">{{ t( 'wt.why.free.title' ) }}</h3>
+            <p class="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-[60ch]">{{ t( 'wt.why.free.desc' ) }}</p>
+          </div>
+        </ScrollReveal>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
+          <ScrollReveal v-for="w in why" :key="w">
+            <div class="h-full border-t-2 border-border pt-5">
+              <h3 class="font-bold mb-2">{{ t( `wt.why.${w}.title` ) }}</h3>
+              <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( `wt.why.${w}.desc` ) }}</p>
+            </div>
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
 
-    <!-- Stories Section -->
+    <DukkanExplainer @start="goTo( 'register' )" />
+
     <section class="py-16 border-b border-border">
       <div class="mx-auto max-w-[1100px] px-5">
         <ScrollReveal>
@@ -155,661 +276,126 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
 
     <main class="mx-auto max-w-[1100px] px-5">
 
-      <!-- ═══ FLOW 1: REGISTER ═══ -->
-      <section id="f1" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
+      <template v-for="c in chapters" :key="c.id">
         <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">1</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f1.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f1.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f1.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div class="flex items-center gap-4 bg-card border border-border rounded-2xl p-5 mb-12">
-            <div class="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center text-xl shrink-0">&#128105;</div>
-            <p class="text-sm leading-relaxed"><strong class="text-foreground">{{ t( 'wt.scenario' ) }}:</strong> {{ t( 'wt.f1.scenario' ) }}</p>
+          <div class="pt-20 pb-2 border-b border-border">
+            <h2 class="text-3xl sm:text-4xl font-black tracking-tight">{{ t( `wt.chapters.${c.id}.title` ) }}</h2>
+            <p class="text-muted-foreground mt-2 max-w-[65ch] pb-6">{{ t( `wt.chapters.${c.id}.desc` ) }}</p>
           </div>
         </ScrollReveal>
 
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="left">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f1.s1.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f1.s1.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( 'wt.f1.s1.desc' ) }}</p>
-            <ul class="space-y-2">
-              <li v-for="b in ['b1','b2','b3']" :key="b" class="flex items-start gap-2.5 text-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                {{ t( `wt.f1.s1.${b}` ) }}
-              </li>
-            </ul>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex justify-center">
-              <PhoneMockup :src="`${M}/register.png`" alt="Register" />
+        <section v-for="f in c.flows" :id="f.id" :key="f.id" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
+          <ScrollReveal>
+            <div class="mb-12">
+              <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">{{ flowNumber( f.id ) }}</div>
+              <span class="block text-sm font-semibold text-accent mb-1">{{ t( k( f.id, 'label' ) ) }}</span>
+              <h3 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( k( f.id, 'title' ) ) }}</h3>
+              <p class="text-muted-foreground mt-2 max-w-lg">{{ t( k( f.id, 'desc' ) ) }}</p>
             </div>
           </ScrollReveal>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-          <ScrollReveal direction="right" class="md:order-2">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f1.s2.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f1.s2.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( 'wt.f1.s2.desc' ) }}</p>
-            <ul class="space-y-2">
-              <li v-for="b in ['b1','b2','b3']" :key="b" class="flex items-start gap-2.5 text-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                {{ t( `wt.f1.s2.${b}` ) }}
-              </li>
-            </ul>
-          </ScrollReveal>
-          <ScrollReveal direction="left" class="md:order-1">
-            <div class="flex justify-center">
-              <PhoneMockup :src="`${M}/login.png`" alt="Login" />
+          <ScrollReveal v-if="f.scenario">
+            <div class="flex items-center gap-4 bg-card border border-border rounded-2xl p-5 mb-12">
+              <div class="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center text-xl shrink-0">{{ f.scenario }}</div>
+              <p class="text-sm leading-relaxed"><strong class="text-foreground">{{ t( 'wt.scenario' ) }}:</strong> {{ t( k( f.id, 'scenario' ) ) }}</p>
             </div>
           </ScrollReveal>
-        </div>
-      </section>
 
-      <!-- ═══ FLOW 2: SHOP ═══ -->
-      <section id="f2" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">2</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f2.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f2.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f2.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div class="flex items-center gap-4 bg-card border border-border rounded-2xl p-5 mb-12">
-            <div class="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center text-xl shrink-0">&#128104;</div>
-            <p class="text-sm leading-relaxed"><strong class="text-foreground">{{ t( 'wt.scenario' ) }}:</strong> {{ t( 'wt.f2.scenario' ) }}</p>
-          </div>
-        </ScrollReveal>
+          <template v-for="( b, bi ) in f.blocks" :key="bi">
+            <div v-if="b.kind === 'split'" class="grid gap-12 items-center mb-16 last:mb-0" :class="splitCols( b.shot, bi )">
+              <ScrollReveal :direction="bi % 2 ? 'right' : 'left'" :class="bi % 2 && b.shot ? 'md:order-2' : ''">
+                <div :class="b.shot ? '' : 'max-w-[65ch] border-s-2 border-accent ps-5'">
+                  <template v-if="b.key">
+                    <span v-if="te( k( f.id, b.key, 'tag' ) )" class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( k( f.id, b.key, 'tag' ) ) }}</span>
+                    <h4 class="text-xl font-bold mb-3">{{ t( k( f.id, b.key, 'title' ) ) }}</h4>
+                    <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( k( f.id, b.key, 'desc' ) ) }}</p>
+                  </template>
+                  <ul class="space-y-2">
+                    <li v-for="bl in bullets( k( f.id, b.key ) )" :key="bl" class="flex items-start gap-2.5 text-sm">
+                      <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
+                      {{ t( bl ) }}
+                    </li>
+                  </ul>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal v-if="b.shot" :direction="bi % 2 ? 'left' : 'right'" :class="bi % 2 ? 'md:order-1' : ''">
+                <div class="flex items-center gap-4 justify-center">
+                  <div v-if="b.shot.og" class="w-full rounded-3xl border border-border bg-muted/60 p-4 sm:p-6 space-y-5">
+                    <figure v-for="o in b.shot.og" :key="o" class="ms-auto w-[88%] rounded-2xl rounded-se-sm bg-card border border-border p-1.5 shadow-md">
+                      <img :src="`/walkthrough/og/${o}-${locale === 'ar' ? 'ar' : 'en'}.png`" :alt="t( k( f.id, b.key, 'title' ) )" width="1200" height="630" loading="lazy" class="block w-full h-auto rounded-xl" />
+                      <figcaption class="flex items-center justify-between gap-3 px-2 pt-2 pb-0.5 text-xs text-muted-foreground">
+                        <span dir="ltr" class="truncate text-accent">dukkan.haritna.net</span>
+                        <span dir="ltr" class="shrink-0">9:41 ✓✓</span>
+                      </figcaption>
+                    </figure>
+                  </div>
+                  <div v-if="b.shot.d" :class="b.shot.m ? 'max-w-[340px]' : 'w-full'">
+                    <BrowserMockup :src="`${D}/${b.shot.d}.png`" :url="b.shot.url" :alt="t( k( f.id, b.key, 'title' ) )" />
+                  </div>
+                  <div v-for="( m, mi ) in b.shot.m" :key="m" :class="b.shot.d && mi === 0 ? 'hidden sm:block' : ''">
+                    <PhoneMockup :src="`${M}/${m}.png`" :alt="t( k( f.id, 'title' ) )" :size="b.shot.d || b.shot.m!.length > 1 ? 'sm' : undefined" />
+                  </div>
+                </div>
+              </ScrollReveal>
+            </div>
 
-        <!-- Storefront -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="left">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f2.s1.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f2.s1.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( 'wt.f2.s1.desc' ) }}</p>
-            <ul class="space-y-2">
-              <li v-for="b in ['b1','b2','b3']" :key="b" class="flex items-start gap-2.5 text-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                {{ t( `wt.f2.s1.${b}` ) }}
-              </li>
-            </ul>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <BrowserMockup :src="`${D}/storefront.png`" url="dukkan.haritna.net" alt="Storefront" />
-          </ScrollReveal>
-        </div>
+            <div v-else-if="b.kind === 'cards'" class="grid sm:grid-cols-2 gap-4 mb-14 last:mb-0" :class="b.cols === 3 ? 'lg:grid-cols-3' : ''">
+              <ScrollReveal v-for="( key, i ) in b.keys" :key="key" :delay="i * 80">
+                <div class="h-full bg-card border border-border rounded-2xl p-6">
+                  <span v-if="te( k( f.id, key, 'tag' ) )" class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( k( f.id, key, 'tag' ) ) }}</span>
+                  <h4 class="font-bold mb-2">{{ t( k( f.id, key, 'title' ) ) }}</h4>
+                  <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( k( f.id, key, 'desc' ) ) }}</p>
+                  <ul v-if="bullets( k( f.id, key ) ).length" class="space-y-2 mt-4">
+                    <li v-for="bl in bullets( k( f.id, key ) )" :key="bl" class="flex items-start gap-2.5 text-sm">
+                      <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
+                      {{ t( bl ) }}
+                    </li>
+                  </ul>
+                  <div v-if="b.shots?.[key]" class="flex justify-center mt-4">
+                    <PhoneMockup :src="`${M}/${b.shots[key]}.png`" :alt="t( k( f.id, key, 'title' ) )" size="sm" />
+                  </div>
+                </div>
+              </ScrollReveal>
+            </div>
 
-        <!-- Browse products -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="right" class="md:order-2">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f2.s2.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f2.s2.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( 'wt.f2.s2.desc' ) }}</p>
-            <ul class="space-y-2">
-              <li v-for="b in ['b1','b2','b3']" :key="b" class="flex items-start gap-2.5 text-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                {{ t( `wt.f2.s2.${b}` ) }}
-              </li>
-            </ul>
-          </ScrollReveal>
-          <ScrollReveal direction="left" class="md:order-1">
-            <div class="flex items-center gap-4 justify-center">
-              <div class="max-w-[340px]">
-                <BrowserMockup :src="`${D}/products.png`" alt="Products grid" />
+            <ScrollReveal v-else-if="b.kind === 'tiles'" class="mb-14 last:mb-0">
+              <div v-if="b.steps" class="grid grid-cols-2 gap-3" :class="b.keys.length === 4 ? 'sm:grid-cols-4' : 'sm:grid-cols-3'">
+                <div v-for="( key, i ) in b.keys" :key="key" class="bg-card border border-border rounded-xl p-5 text-center">
+                  <div class="w-9 h-9 rounded-lg bg-accent/10 text-accent font-black text-sm inline-flex items-center justify-center mb-3">{{ i + 1 }}</div>
+                  <h4 class="text-sm font-bold mb-1">{{ t( k( f.id, key, 'title' ) ) }}</h4>
+                  <p class="text-sm text-muted-foreground leading-relaxed">{{ t( k( f.id, key, 'desc' ) ) }}</p>
+                </div>
               </div>
-              <div class="hidden sm:block">
-                <PhoneMockup :src="`${M}/products.png`" alt="Mobile products" size="sm" />
+              <div v-else class="grid sm:grid-cols-3 gap-x-8 gap-y-6">
+                <div v-for="key in b.keys" :key="key" class="border-s-2 border-accent ps-4">
+                  <h4 class="font-bold mb-1">{{ t( k( f.id, key, 'title' ) ) }}</h4>
+                  <p class="text-sm text-muted-foreground leading-relaxed">{{ t( k( f.id, key, 'desc' ) ) }}</p>
+                </div>
               </div>
-            </div>
-          </ScrollReveal>
-        </div>
+            </ScrollReveal>
 
-        <!-- Product detail -->
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-          <ScrollReveal direction="left">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f2.s3.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f2.s3.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f2.s3.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex justify-center">
-              <PhoneMockup :src="`${M}/storefront.png`" alt="Storefront with companies" />
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <!-- ═══ FLOW 3: PRODUCT TYPES ═══ -->
-      <section id="f3" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">3</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f3.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f3.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f3.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <div class="grid sm:grid-cols-2 gap-4 mb-12">
-          <ScrollReveal v-for="( type, i ) in ['standard','custom','service','auction']" :key="type" :delay="i * 80">
-            <div class="bg-card border border-border rounded-2xl p-6">
-              <h4 class="font-bold mb-2">{{ t( `wt.f3.${type}.title` ) }}</h4>
-              <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( `wt.f3.${type}.desc` ) }}</p>
-            </div>
-          </ScrollReveal>
-        </div>
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-          <ScrollReveal direction="left">
-            <div class="flex justify-center">
-              <PhoneMockup :src="`${M}/product-create.png`" alt="Create product" />
-            </div>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f3.create.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f3.create.desc' ) }}</p>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <!-- ═══ FLOW 4: CART & ORDER ═══ -->
-      <section id="f4" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">4</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f4.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f4.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f4.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-14">
-            <div v-for="( step, i ) in ['s1','s2','s3','s4']" :key="step"
-              class="bg-card border border-border rounded-xl p-5 text-center">
-              <div class="w-9 h-9 rounded-lg bg-accent/10 text-accent font-black text-sm inline-flex items-center justify-center mb-3">{{ i + 1 }}</div>
-              <h4 class="text-sm font-bold mb-1">{{ t( `wt.f4.${step}.title` ) }}</h4>
-              <p class="text-sm text-muted-foreground leading-relaxed">{{ t( `wt.f4.${step}.desc` ) }}</p>
-            </div>
-          </div>
-        </ScrollReveal>
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-          <ScrollReveal direction="left">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f4.detail.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f4.detail.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f4.detail.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex gap-3 justify-center">
-              <PhoneMockup :src="`${M}/orders-list.png`" alt="Orders list" size="sm" />
-              <PhoneMockup :src="`${M}/company-products.png`" alt="Company products" size="sm" />
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <!-- ═══ FLOW 5: BUSINESS ═══ -->
-      <section id="f5" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">5</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f5.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f5.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f5.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div class="flex items-center gap-4 bg-card border border-border rounded-2xl p-5 mb-12">
-            <div class="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center text-xl shrink-0">&#128105;</div>
-            <p class="text-sm leading-relaxed"><strong class="text-foreground">{{ t( 'wt.scenario' ) }}:</strong> {{ t( 'wt.f5.scenario' ) }}</p>
-          </div>
-        </ScrollReveal>
-
-        <!-- Create company -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="left">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f5.s1.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f5.s1.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( 'wt.f5.s1.desc' ) }}</p>
-            <ul class="space-y-2">
-              <li v-for="b in ['b1','b2','b3']" :key="b" class="flex items-start gap-2.5 text-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                {{ t( `wt.f5.s1.${b}` ) }}
-              </li>
-            </ul>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex gap-3 justify-center items-start">
-              <PhoneMockup :src="`${M}/dashboard.png`" alt="Company Dashboard" size="sm" />
-              <PhoneMockup :src="`${M}/company-create.png`" alt="Create Company" size="sm" />
-            </div>
-          </ScrollReveal>
-        </div>
-
-        <!-- Dashboard -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="right" class="md:order-2">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f5.s2.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f5.s2.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f5.s2.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="left" class="md:order-1">
-            <BrowserMockup :src="`${D}/dashboard.png`" url="Elegance Fashion — Dashboard" alt="Dashboard" />
-          </ScrollReveal>
-        </div>
-
-        <!-- Branches + Settings -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="left">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f5.s3.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f5.s3.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f5.s3.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex gap-3 justify-center items-start">
-              <PhoneMockup :src="`${M}/branches.png`" alt="Branches" size="sm" />
-              <PhoneMockup :src="`${M}/company-settings.png`" alt="Settings" size="sm" />
-            </div>
-          </ScrollReveal>
-        </div>
-
-        <!-- Team Invitations -->
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-          <ScrollReveal direction="right" class="md:order-2">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f5.s4.tag' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f5.s4.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f5.s4.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="left" class="md:order-1">
-            <BrowserMockup :src="`${D}/company-members.png`" url="Team Members — Invitations" alt="Team invitations" />
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <!-- ═══ FLOW 6: CATALOG ═══ -->
-      <section id="f6" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">6</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f6.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f6.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f6.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-
-        <!-- Categories -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="left">
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f6.cats.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f6.cats.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex items-center gap-4 justify-center">
-              <div class="max-w-[340px]">
-                <BrowserMockup :src="`${D}/company-categories.png`" alt="Categories desktop" />
+            <ScrollReveal v-else-if="b.kind === 'gallery'" class="mb-16 last:mb-0">
+              <div class="max-w-[65ch] mb-8">
+                <h4 class="text-xl font-bold mb-3">{{ t( k( f.id, b.key, 'title' ) ) }}</h4>
+                <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( k( f.id, b.key, 'desc' ) ) }}</p>
               </div>
-              <div class="hidden sm:block">
-                <PhoneMockup :src="`${M}/category-tree.png`" alt="Category tree" size="sm" />
+              <div class="grid sm:grid-cols-2 gap-x-6 gap-y-8">
+                <figure v-for="( o, id ) in b.og" :key="id">
+                  <img :src="`/walkthrough/og/${o}-${locale === 'ar' ? 'ar' : 'en'}.png`" :alt="t( k( f.id, b.key, id ) )" width="1200" height="630" loading="lazy" class="block w-full h-auto rounded-2xl border border-border shadow-md" />
+                  <figcaption class="mt-3 text-sm font-semibold">{{ t( k( f.id, b.key, id ) ) }}</figcaption>
+                </figure>
               </div>
-            </div>
-          </ScrollReveal>
-        </div>
+            </ScrollReveal>
 
-        <!-- Products -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="right" class="md:order-2">
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f6.prods.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f6.prods.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="left" class="md:order-1">
-            <BrowserMockup :src="`${D}/company-products.png`" url="Products — Elegance Fashion" alt="Products management" />
-          </ScrollReveal>
-        </div>
-
-        <!-- Media Library -->
-        <ScrollReveal>
-          <div class="max-w-[65ch] border-s-2 border-accent ps-5">
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f6.media.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f6.media.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      <!-- ═══ FLOW 7: ORDERS ═══ -->
-      <section id="f7" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">7</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f7.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f7.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f7.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-12">
-            <div v-for="s in [{k:'pending',c:'bg-yellow-400'},{k:'confirmed',c:'bg-primary-light'},{k:'ready',c:'bg-accent'},{k:'delivered',c:'bg-green-500'}]" :key="s.k"
-              class="bg-card border border-border rounded-xl p-4 text-center">
-              <div class="w-3 h-3 rounded-full mx-auto mb-2" :class="s.c"></div>
-              <h4 class="text-sm font-bold">{{ t( `wt.f7.${s.k}.title` ) }}</h4>
-              <p class="text-xs text-muted-foreground mt-1">{{ t( `wt.f7.${s.k}.desc` ) }}</p>
-            </div>
-          </div>
-        </ScrollReveal>
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-          <ScrollReveal direction="left">
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f7.list.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f7.list.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex items-center gap-4 justify-center">
-              <div class="max-w-[340px]">
-                <BrowserMockup :src="`${D}/orders-list.png`" alt="Orders desktop" />
+            <ScrollReveal v-else class="mb-14 last:mb-0">
+              <div class="flex items-center gap-4 justify-center">
+                <BrowserMockup v-if="b.shot.d" :src="`${D}/${b.shot.d}.png`" :url="b.shot.url" :alt="t( k( f.id, 'title' ) )" />
+                <PhoneMockup v-for="m in b.shot.m" :key="m" :src="`${M}/${m}.png`" :alt="t( k( f.id, 'title' ) )" />
               </div>
-              <div class="hidden sm:block">
-                <PhoneMockup :src="`${M}/orders-list.png`" alt="Orders mobile" size="sm" />
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+            </ScrollReveal>
+          </template>
+        </section>
+      </template>
 
-      <!-- ═══ FLOW 8: SOCIAL ═══ -->
-      <section id="f8" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">8</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f8.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f8.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f8.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div class="grid sm:grid-cols-3 gap-4">
-            <div class="bg-card border border-border rounded-2xl p-5">
-              <h4 class="font-bold mb-1">{{ t( 'wt.f8.follow.title' ) }}</h4>
-              <p class="text-sm text-muted-foreground leading-relaxed mb-3">{{ t( 'wt.f8.follow.desc' ) }}</p>
-              <div class="flex justify-center">
-                <PhoneMockup :src="`${M}/following.png`" alt="Following" size="sm" />
-              </div>
-            </div>
-            <div class="bg-card border border-border rounded-2xl p-5">
-              <h4 class="font-bold mb-1">{{ t( 'wt.f8.wishlist.title' ) }}</h4>
-              <p class="text-sm text-muted-foreground leading-relaxed mb-3">{{ t( 'wt.f8.wishlist.desc' ) }}</p>
-              <div class="flex justify-center">
-                <PhoneMockup :src="`${M}/wishlist.png`" alt="Wishlist" size="sm" />
-              </div>
-            </div>
-            <div class="bg-card border border-border rounded-2xl p-5">
-              <h4 class="font-bold mb-1">{{ t( 'wt.f8.reviews.title' ) }}</h4>
-              <p class="text-sm text-muted-foreground leading-relaxed mb-3">{{ t( 'wt.f8.reviews.desc' ) }}</p>
-              <div class="flex justify-center">
-                <PhoneMockup :src="`${M}/profile.png`" alt="Profile" size="sm" />
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      <!-- ═══ FLOW 9: PAGE BUILDER ═══ -->
-      <section id="f9" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">9</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f9.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f9.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f9.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="left">
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f9.sections.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f9.sections.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <BrowserMockup :src="`${D}/page-builder.png`" url="Page Builder — Sections" alt="Page Builder" />
-          </ScrollReveal>
-        </div>
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-          <ScrollReveal direction="right" class="md:order-2">
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f9.result.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed">{{ t( 'wt.f9.result.desc' ) }}</p>
-          </ScrollReveal>
-          <ScrollReveal direction="left" class="md:order-1">
-            <BrowserMockup :src="`${D}/public-page.png`" url="Company Public Page — Elegance Fashion" alt="Published company page" />
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <!-- ═══ FLOW 10: DELIVERY ═══ -->
-      <section id="f10" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">10</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f10.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f10.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f10.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-14">
-            <div v-for="( step, i ) in ['s1','s2','s3','s4']" :key="step"
-              class="bg-card border border-border rounded-xl p-5 text-center">
-              <div class="w-9 h-9 rounded-lg bg-accent/10 text-accent font-black text-sm inline-flex items-center justify-center mb-3">{{ i + 1 }}</div>
-              <h4 class="text-sm font-bold mb-1">{{ t( `wt.f10.${step}.title` ) }}</h4>
-              <p class="text-sm text-muted-foreground leading-relaxed">{{ t( `wt.f10.${step}.desc` ) }}</p>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="left">
-            <BrowserMockup :src="`${D}/delivery-home.png`" url="Delivery Portal — Home" alt="Delivery home" />
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex gap-3 justify-center">
-              <PhoneMockup :src="`${M}/delivery-stats.png`" alt="Delivery stats" size="sm" />
-              <PhoneMockup :src="`${M}/delivery-profile.png`" alt="Delivery profile" size="sm" />
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <!-- ═══ FLOW 11: CHAT ═══ -->
-      <section id="f11" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">11</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f11.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f11.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f11.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <!-- Chat: desktop + mobile screenshots -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="left">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f11.label' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f11.chat.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( 'wt.f11.chat.desc' ) }}</p>
-            <ul class="space-y-2">
-              <li v-for="b in ['b1','b2','b3','b4']" :key="b" class="flex items-start gap-2.5 text-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                {{ t( `wt.f11.chat.${b}` ) }}
-              </li>
-            </ul>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex items-center gap-4 justify-center">
-              <div class="max-w-[340px] hidden sm:block">
-                <BrowserMockup :src="`${D}/chat.png`" alt="Chat conversations" />
-              </div>
-              <PhoneMockup :src="`${M}/chat.png`" alt="Chat mobile" size="sm" />
-            </div>
-          </ScrollReveal>
-        </div>
-
-        <!-- Notifications -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <ScrollReveal direction="left">
-            <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( 'wt.f11.label' ) }}</span>
-            <h3 class="text-xl font-bold mb-3">{{ t( 'wt.f11.notif.title' ) }}</h3>
-            <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( 'wt.f11.notif.desc' ) }}</p>
-            <ul class="space-y-2">
-              <li v-for="b in ['b1','b2','b3','b4']" :key="b" class="flex items-start gap-2.5 text-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                {{ t( `wt.f11.notif.${b}` ) }}
-              </li>
-            </ul>
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="flex items-center gap-4 justify-center">
-              <div class="max-w-[340px] hidden sm:block">
-                <BrowserMockup :src="`${D}/notifications.png`" alt="Notifications" />
-              </div>
-              <PhoneMockup :src="`${M}/notifications.png`" alt="Notifications mobile" size="sm" />
-            </div>
-          </ScrollReveal>
-        </div>
-
-      </section>
-
-      <!-- ═══ FLOW 12: POS ═══ -->
-      <section id="f12" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">12</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f12.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f12.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f12.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div class="flex items-center gap-4 bg-card border border-border rounded-2xl p-5 mb-12">
-            <div class="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center text-xl shrink-0">&#128722;</div>
-            <p class="text-sm leading-relaxed"><strong class="text-foreground">{{ t( 'wt.scenario' ) }}:</strong> {{ t( 'wt.f12.scenario' ) }}</p>
-          </div>
-        </ScrollReveal>
-
-        <div class="grid sm:grid-cols-3 gap-4 mb-14">
-          <ScrollReveal v-for="( step, i ) in ['s1','s2','s3']" :key="step" :delay="i * 80">
-            <div class="bg-card border border-border rounded-2xl p-6">
-              <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( `wt.f12.${step}.tag` ) }}</span>
-              <h4 class="font-bold mb-2">{{ t( `wt.f12.${step}.title` ) }}</h4>
-              <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( `wt.f12.${step}.desc` ) }}</p>
-              <ul class="space-y-2">
-                <li v-for="b in ['b1','b2','b3']" :key="b" class="flex items-start gap-2.5 text-sm">
-                  <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                  {{ t( `wt.f12.${step}.${b}` ) }}
-                </li>
-              </ul>
-            </div>
-          </ScrollReveal>
-        </div>
-        <ScrollReveal>
-          <BrowserMockup :src="`${D}/pos-terminal.png`" url="POS Terminal — Giza Branch" alt="POS Terminal" />
-        </ScrollReveal>
-      </section>
-
-      <!-- ═══ FLOW 13: ANALYTICS ═══ -->
-      <section id="f13" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">13</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f13.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f13.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f13.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal>
-          <BrowserMockup :src="`${D}/analytics.png`" url="Analytics & Reports — Dashboard" alt="Analytics Dashboard" class="mb-14" />
-        </ScrollReveal>
-
-        <div class="grid sm:grid-cols-3 gap-4">
-          <ScrollReveal v-for="( step, i ) in ['s1','s2','s3']" :key="step" :delay="i * 80">
-            <div class="bg-card border border-border rounded-2xl p-6">
-              <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( `wt.f13.${step}.tag` ) }}</span>
-              <h4 class="font-bold mb-2">{{ t( `wt.f13.${step}.title` ) }}</h4>
-              <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( `wt.f13.${step}.desc` ) }}</p>
-              <ul class="space-y-2">
-                <li v-for="b in ['b1','b2','b3']" :key="b" class="flex items-start gap-2.5 text-sm">
-                  <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                  {{ t( `wt.f13.${step}.${b}` ) }}
-                </li>
-              </ul>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <!-- ═══ FLOW 14: TICKETS ═══ -->
-      <section id="f14" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">14</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f14.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f14.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f14.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-14">
-          <ScrollReveal direction="left">
-            <BrowserMockup :src="`${D}/tickets.png`" url="My Tickets — Support" alt="Tickets" />
-          </ScrollReveal>
-          <ScrollReveal direction="right">
-            <div class="grid gap-4">
-              <div v-for="step in ['s1','s2','s3']" :key="step" class="bg-card border border-border rounded-2xl p-5">
-                <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-2">{{ t( `wt.f14.${step}.tag` ) }}</span>
-                <h4 class="font-bold mb-1">{{ t( `wt.f14.${step}.title` ) }}</h4>
-                <p class="text-sm text-muted-foreground leading-relaxed">{{ t( `wt.f14.${step}.desc` ) }}</p>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <!-- ═══ FLOW 15: COUPONS ═══ -->
-      <section id="f15" class="scroll-mt-16 md:scroll-mt-32 py-20 border-b border-border">
-        <ScrollReveal>
-          <div class="mb-12">
-            <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-accent/10 border border-accent text-accent font-black text-lg mb-3">15</div>
-            <span class="block text-sm font-semibold text-accent mb-1">{{ t( 'wt.f15.label' ) }}</span>
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ t( 'wt.f15.title' ) }}</h2>
-            <p class="text-muted-foreground mt-2 max-w-lg">{{ t( 'wt.f15.desc' ) }}</p>
-          </div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div class="flex items-center gap-4 bg-card border border-border rounded-2xl p-5 mb-12">
-            <div class="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center text-xl shrink-0">&#127915;</div>
-            <p class="text-sm leading-relaxed"><strong class="text-foreground">{{ t( 'wt.scenario' ) }}:</strong> {{ t( 'wt.f15.scenario' ) }}</p>
-          </div>
-        </ScrollReveal>
-
-        <div class="grid sm:grid-cols-3 gap-4 mb-14">
-          <ScrollReveal v-for="( step, i ) in ['s1','s2','s3']" :key="step" :delay="i * 80">
-            <div class="bg-card border border-border rounded-2xl p-6">
-              <span class="inline-block text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-md mb-3">{{ t( `wt.f15.${step}.tag` ) }}</span>
-              <h4 class="font-bold mb-2">{{ t( `wt.f15.${step}.title` ) }}</h4>
-              <p class="text-[0.95rem] text-muted-foreground leading-relaxed mb-4">{{ t( `wt.f15.${step}.desc` ) }}</p>
-              <ul class="space-y-2">
-                <li v-for="b in ['b1','b2','b3']" :key="b" class="flex items-start gap-2.5 text-sm">
-                  <span class="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0 shadow-[0_0_4px] shadow-accent/40"></span>
-                  {{ t( `wt.f15.${step}.${b}` ) }}
-                </li>
-              </ul>
-            </div>
-          </ScrollReveal>
-        </div>
-        <ScrollReveal>
-          <BrowserMockup :src="`${D}/coupons.png`" url="Coupons & Discounts — Elegance Fashion" alt="Coupons Management" />
-        </ScrollReveal>
-      </section>
-
-      <!-- TECH -->
       <section class="py-20">
         <ScrollReveal>
           <div class="text-center mb-10">
@@ -828,7 +414,6 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
       </section>
     </main>
 
-    <!-- Footer -->
     <footer class="py-12 text-center border-t border-border">
       <p class="text-lg font-black" dir="ltr"><span class="text-accent">Dukkan</span><span class="text-muted-foreground ms-1">by Haritna Technologies</span></p>
       <p class="text-sm text-muted-foreground mt-1">{{ t( 'wt.footer' ) }}</p>
