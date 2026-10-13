@@ -117,7 +117,7 @@ export default {
       p1: {
         desc: 'Tariq is a mobile phone repair technician in Jeddah. He has a small shop and wants customers to find him and order repairs online.',
         scenario: 'Tariq saw a Dukkan ad on social media. He downloaded the app, signed up as a business owner, and got verified in seconds.',
-        s1: { desc: 'Tariq opens Dukkan, taps Sign Up, and selects Customer (business owner). He enters his name, phone (+966), and email. An OTP code arrives instantly.' },
+        s1: { desc: 'Tariq opens Dukkan, taps Sign Up, and selects Customer (business owner). He enters his name, phone (+20), and email. An OTP code arrives instantly.' },
         s2: { desc: 'After verifying, Tariq logs in and lands on his Customer Portal — ready to set up his repair shop.' },
       },
       p2: {
@@ -235,9 +235,9 @@ export default {
         d9: '45 min',
       },
       p1: {
-        desc: 'Ahmad owns a barbershop in Riyadh. He wants customers to book haircuts online instead of just walking in.',
+        desc: 'Ahmad owns a barbershop in Nasr City. He wants customers to book haircuts online instead of just walking in.',
         scenario: 'Ahmad heard about Dukkan from a friend. He opens the app, signs up as a business owner, and gets verified in under a minute.',
-        s1: { desc: 'Ahmad opens Dukkan, taps Sign Up, and selects Customer (business owner). He enters his name, phone (+966), and email. An OTP code arrives instantly.' },
+        s1: { desc: 'Ahmad opens Dukkan, taps Sign Up, and selects Customer (business owner). He enters his name, phone (+20), and email. An OTP code arrives instantly.' },
         s2: { desc: 'After verifying, Ahmad logs in and lands on his Customer Portal — ready to set up his barbershop.' },
       },
       p2: {
@@ -347,7 +347,7 @@ export default {
       p1: {
         desc: 'Nora owns a coworking space in Jeddah. She wants freelancers and startups to discover and book spaces online.',
         scenario: 'Nora heard about Dukkan from a fellow entrepreneur. She opens the app, signs up as a business owner, and gets verified in under a minute.',
-        s1: { desc: 'Nora opens Dukkan, taps Sign Up, and selects Customer (business owner). She enters her name, phone (+966), and email. An OTP code arrives instantly.' },
+        s1: { desc: 'Nora opens Dukkan, taps Sign Up, and selects Customer (business owner). She enters her name, phone (+20), and email. An OTP code arrives instantly.' },
         s2: { desc: 'After verifying, Nora logs in and lands on her Customer Portal — ready to set up her coworking space.' },
       },
       p2: {
@@ -796,7 +796,7 @@ export default {
       p1: {
         desc: 'Yasser is a professional watchmaker in Dammam. He owns a small shop specializing in watch repair and sales — from casual to luxury.',
         scenario: 'Yasser was only selling on Instagram. A friend told him about Dukkan, he downloaded the app and signed up in a minute.',
-        s1: { desc: 'Yasser opens Dukkan, taps Sign Up, and selects Customer (business owner). He enters his name, phone (+966), and email. An OTP code arrives instantly.' },
+        s1: { desc: 'Yasser opens Dukkan, taps Sign Up, and selects Customer (business owner). He enters his name, phone (+20), and email. An OTP code arrives instantly.' },
         s2: { desc: 'After verifying, Yasser logs in and lands on his Customer Portal — ready to set up his watch center online.' },
       },
       p2: {

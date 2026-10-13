@@ -7,10 +7,10 @@ export default {
     enterprise: 'Enterprise',
   },
   hero: {
-    tagline: 'Innovation Hub',
-    slogan: 'Where Technology Meets Ambition',
-    description: 'We build smart digital solutions that empower businesses to scale and thrive in the modern digital landscape.',
-    cta: 'Discover Our Smart Solutions',
+    tagline: 'Haritna presents Dukkan',
+    slogan: 'One app for your whole shop',
+    description: 'Online store, in-shop checkout, bookings, made-to-order products, auctions, your numbers in front of you, and follow-ups that run themselves. Open for free, pay just 2% on orders that are sold and delivered, and your money reaches you directly.',
+    cta: 'See Dukkan',
   },
   philosophy: {
     title: 'Our Philosophy',
@@ -146,7 +146,7 @@ export default {
     register_step2: 'Fill in your details',
     register_field_name: 'Your real name. Other users and companies will see this.',
     register_field_phone:
-      'Mobile number with country code (+966 by default). Used for contact and delivery.',
+      'Mobile number with country code (+20 by default). Used for contact and delivery.',
     register_field_email: "Your login. Make sure you can access it — you'll verify it next.",
     register_field_password:
       'At least one uppercase, one lowercase, and one number (e.g. MyPass1).',
@@ -177,7 +177,7 @@ export default {
     branches_step1: 'Branches list',
     branches_step1_desc: "From your company dashboard, go to 'Branches' to see all your branches.",
     branches_step2: 'Create a branch',
-    branches_field_name: "e.g. 'Main Branch' or 'Riyadh - Al Olaya'.",
+    branches_field_name: "e.g. 'Main Branch' or 'Nasr City - Abbas El Akkad'.",
     branches_field_phone: 'Branch-specific contact number.',
     branches_field_address: 'The full street address.',
     branches_field_map:
@@ -501,7 +501,7 @@ export default {
         },
         custom_order: {
           title: 'Made to order',
-          desc: 'The customer describes what they want and you send a quote. They accept, and it becomes an order.',
+          desc: 'A product with priced add-ons. The customer builds their order, sees the price right away, and buys. Or they post what they need, shops submit their prices, and the customer picks the one that suits them.',
         },
         service: {
           title: 'Service',
@@ -924,7 +924,7 @@ export default {
       },
       custom_order: {
         title: 'Custom orders',
-        desc: 'The buyer describes the request, the merchant sends a quote, and an accepted quote becomes an order.',
+        desc: 'The product has priced add-ons, so the buyer builds the order, sees the price right away, and buys. Or the buyer posts what they need, shops submit their prices, and the buyer accepts the one that suits them.',
       },
       service: {
         title: 'Bookable services',
