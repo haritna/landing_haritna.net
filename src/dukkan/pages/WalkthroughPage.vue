@@ -16,6 +16,7 @@ const { t, te, locale } = useI18n()
 const { desktopBase: D, mobileBase: M } = useScreenshotPath()
 const isScrolled = ref( false )
 const activeFlow = ref( '' )
+const registerUrl = 'https://dukkan.haritna.net/register'
 
 type Shot = { d?: string, m?: string[], url?: string, og?: string[] }
 type Block =
@@ -160,6 +161,7 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
           <span class="text-sm font-bold"><span class="text-accent">Dukkan</span><span class="text-muted-foreground ms-1 hidden sm:inline">Walkthrough</span></span>
         </RouterLink>
         <div class="flex items-center gap-2">
+          <a :href="registerUrl" class="px-3 py-1.5 rounded-lg bg-accent text-white text-xs sm:text-sm font-bold hover:opacity-90 transition-opacity">{{ t( 'wt.hero.cta' ) }}</a>
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
@@ -192,7 +194,10 @@ onUnmounted( () => window.removeEventListener( 'scroll', handleScroll ) )
           </h1>
         </ScrollReveal>
         <ScrollReveal :delay="200">
-          <p class="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto mb-12 leading-relaxed">{{ t( 'wt.hero.desc' ) }}</p>
+          <p class="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto mb-8 leading-relaxed">{{ t( 'wt.hero.desc' ) }}</p>
+        </ScrollReveal>
+        <ScrollReveal :delay="250">
+          <a :href="registerUrl" class="inline-flex items-center px-7 py-3 mb-12 rounded-xl bg-accent text-white font-bold shadow-lg shadow-accent/30 hover:opacity-90 transition-opacity">{{ t( 'wt.hero.cta' ) }}</a>
         </ScrollReveal>
         <ScrollReveal :delay="300">
           <div class="relative max-w-[900px] mx-auto" style="perspective: 1200px;">

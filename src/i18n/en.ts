@@ -382,6 +382,7 @@ export default {
   wt: {
     hero: {
       badge: 'A {n}-step tour',
+      cta: 'Create your store',
       title1: 'Run your whole business on ',
       title2: ', from first customer to growth',
       desc: 'For sellers: one app you start for free, with an online store, an in-store checkout, bookings, and offers that run themselves. For buyers: worry-free shopping, with your rights looked after until your order arrives. It’s all in this tour.',
